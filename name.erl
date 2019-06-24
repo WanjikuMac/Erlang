@@ -5,7 +5,7 @@
 
 -export([uname/0, double/1, f2c/1, c2f/1, convert/2, area/1, list1/1,
    max_num/1, min_max/1, even/0, odd/0, math_fun/1, filter/2, filter_two/1,
-  filter_element/1, split/1]).
+  filter_element/1, split/1, map_search_pred/1]).
 
 uname()->
    io:fwrite(" Hello\n ", []).
@@ -68,16 +68,33 @@ filter_two(L) ->
 filter_element(L) ->
   lists:filter(even(), L).
 
+%splits a list of integers as even or odd returning a {[true,true],[false,false]}
 split(L) ->
   Q = lists:map(even(), L),
   Z = lists:filter(fun(X) -> X == true end, Q) ++ lists:filter(fun(X) -> X == false end, Q),
-    V = lists:partition(fun(A) -> A == true end, Z).
-  tuple_to_list(V)
-  %lists:member(L, lists:filter(even(), L)).
-    %lists:filter(even(), L).
-   %lists:map(fun(X) -> lists:filter(even(), X), L).
+    lists:partition(fun(A) -> A == true end, Z).
+  %tuple_to_list(V)
+
 
 even() -> fun(X) -> (X rem 2 )== 0 end.
 odd() -> fun(X) -> (X rem 2) =/= 0 end.
 %math_fun() ->
+
+%COUNT HOW MANY TIMES A CHARACTER APPEARS IN THE WORD
+%count_characters(Str) ->
+  %count_characters(Str,#{}).
+
+%count_characters([H|T], #{H => N} =X) ->
+ % N =0,
+  %count_characters(T, X#{H := N+1});
+%count_characters( [H|T], X) ->
+ % count_characters(T, X#{H=>1});
+%count_characters([], X) ->
+ % X.
+
+map_search_pred(Map) ->
+  Map = #{status => old, task => "fininsh namespacing"},
+   fun ({status,_V}) -> maps:is_key(status, Map) end.
+  %maps:filter(Pred , Map).
+
 
