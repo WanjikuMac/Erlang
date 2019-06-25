@@ -1,6 +1,6 @@
 - module(geo).
 - export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1,
-  qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, uppercase_head/1]).
+  qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -88,20 +88,22 @@ parse_name(Raw) ->
 parse_name_new(Raw) ->
   Tokens = string:tokens(string:trim(Raw), " "),
   ToFilter = lists:map(fun string:casefold/1,["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
-    "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is","$", "jiunge","join", "welcome", "yes"] ),
+    "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is","$", "jiunge","join", "welcome", "yes", "40130", ""] ),
   Filtered_List = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Tokens),
+  %io_lib:format("~s", Filtered_List),
   Value =  lists:flatten((string:replace(Filtered_List, "0", "o"))),
   case Value of
-    [H| T] -> [string:to_upper(H) | string:to_lower(T)];
+    [H| T] ->
+      Final_string =[string:to_upper(H) | string:to_lower(T)],
+      io:format("~p~n", [Final_string]);
+      %io_lib:format("~s", [Final_string]);
     [] -> "Rafiki"
   end.
 
-%zero_to_o($0) -> $o;
-%zero_to_o(x) -> x.
 
 %uppercase_head(lists:map(fun zero_to_o/1, Username)).
-uppercase_head([$o | Tail]) -> [$O | Tail]; uppercase_head(X) -> X.
-zero_to_o($0) -> $o; zero_to_o(x) -> x.
+%uppercase_head([$o | Tail]) -> [$O | Tail]; uppercase_head(X) -> X.
+%zero_to_o($0) -> $o; zero_to_o(x) -> x.
 
 
 startin(Str1) ->
@@ -110,10 +112,25 @@ startin(Str1) ->
   %Check_member = lists:member("I", Str3),
   ToFilter = lists:map(fun string:casefold/1,
                        ["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
-                "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is"]),
+                "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is", "40130"]),
   Filtered_list = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Str3),
+  io:format("~p~n", [Filtered_list]),
+  Value = lists:map(fun zero_to_o/1, Filtered_list),
   %Str2 = string:substr(Str1, 6,7),
-  io:format("~p~n", [Filtered_list]).
+
+  io:format("~p~n", [Value]).
+
+to_truncate(Name) ->
+  List_to_truncate = ["!", "@"],
+                    V = iolist_to_binary(Name),
+                    Result = string:trim( V, trailing, List_to_truncate),
+                    io:format("~p~n",[Result]).
+
+
+% lists:map(fun (Z) -> string:replace(Z, "0", o)end, Z).
+
+zero_to_o(0) -> o;
+zero_to_o(x) -> x.
 
 %spacing in between characters
 intersperse([C], _) -> [C];
