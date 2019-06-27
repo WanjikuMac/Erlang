@@ -92,9 +92,16 @@ odd() -> fun(X) -> (X rem 2) =/= 0 end.
 %count_characters([], X) ->
  % X.
 
+%Write a function map_search_pred(Map, Pred)
+%that returns the first element {Key,Value} in the map for which Pred(Key, Value) is true.
 map_search_pred(Map) ->
-  Map = #{status => old, task => "fininsh namespacing"},
-   fun ({status,_V}) -> maps:is_key(status, Map) end.
-  %maps:filter(Pred , Map).
+  %Map = #{a => 2, b=>3, c=>4, d => 5, e => 6, "a" => 1, "b"=> 9},
+    %Pred = fun(K,V) -> is_atom(K) andalso (V rem 2) =:= 0 end,
+  %maps:filter(Pred, Map).
+
+  Map = #{status => old, task => "fininsh namespacing", "status" => done},
+  Pred = fun(K,V) -> is_atom(K) andalso(V) == old end,
+  %io:format("~p~n", [Pred]),
+  maps:filter(Pred , Map).
 
 

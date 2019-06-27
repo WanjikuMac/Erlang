@@ -1,6 +1,6 @@
 -module(tut).
 
--export([ping/1, start/0, pong/0, startm/0, dog/0, rabbit/0]).
+-export([ping/1, start/0, pong/0, startm/0, dog/0, rabbit/0, keyword_rh/1]).
 
 ping(0) ->
   pong ! finished,
@@ -52,3 +52,36 @@ rabbit() ->
 startm() ->
     register(dog, spawn(tut, dog, [])),
       spawn(tut, rabbit, []).
+
+keyword_rh(KWSpec) ->
+  {resp_handler,
+    fun (Input) ->
+      MatchLens = lists:map(
+        fun ({Variants, Out}) ->
+          {lists:map(fun erlang:length/1,
+            lists:filter(fun (Variant) ->
+              match_keyword(Variant, Input)
+                         end,
+              Variants)),
+            Out}
+        end,
+        KWSpec),
+      Matches = lists:filter(fun (M) -> is_match(M) end, MatchLens),
+      io:format("~s~n",[Matches]),
+      Sorted = lists:sort(fun ({L1, _}, {L2, _}) -> lists:max(L1) > lists:max(L2) end, Matches),
+      io:format("~s~n",[Sorted]),
+      case Sorted of % Sometimes you want to accept "A" and "Africa" as different keywords
+        [{_Lens, Out} | _] ->
+          Out;
+        [] ->
+          {invalid, {keyword, [KWSpec], Input, not_an_option}}
+      end
+    end}.
+
+match_keyword(KeywordRaw, InputRaw) ->
+  Keyword = string:casefold(KeywordRaw),
+  Input = string:casefold(string:trim(InputRaw)),
+  string:find(Input, Keyword) =:= Input.
+
+is_match({[], _}) -> false;
+is_match(_) -> true.
