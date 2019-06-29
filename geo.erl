@@ -1,6 +1,7 @@
 - module(geo).
 - export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1,
-  qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1]).
+  qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
+  trim_after_flat/2, flatten/1, value/2]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -86,20 +87,55 @@ parse_name(Raw) ->
   %end.
 
 parse_name_new(Raw) ->
-  Tokens = string:tokens(string:trim(Raw), " "),
-  ToFilter = lists:map(fun string:casefold/1,["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
-    "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is","$", "jiunge","join", "welcome", "yes", "40130", ""] ),
-  Filtered_List = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Tokens),
-  %io_lib:format("~s", Filtered_List),
-  Value =  lists:flatten((string:replace(Filtered_List, "0", "o"))),
+TruncateAfter = [[$!], [$"], [$#], [$$], [$%], [$&], [$(], [$)], [$*], [$+], [$-], [$/], [$:],  [$;], [$<], [$=], [$>], [$?], [$@], [$[], [$\]]],
+  %truncate any values after the symbols above
+    Truncated_Value = value(Raw, TruncateAfter),
+      Tokens = string:tokens(string:trim(Truncated_Value), " "),
+      %Return the string without any member of the list below
+        ToFilter = lists:map(fun string:casefold/1,["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
+           "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is","$", "jiunge","join", "welcome", "yes", "40130", ""] ),
+        Filtered_List = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Tokens),
+        Value =  lists:flatten((string:replace(Filtered_List, "0", "o"))),
   case Value of
-    [H| T] ->
-      Final_string =[string:to_upper(H) | string:to_lower(T)],
-      io:format("~p~n", [Final_string]);
-      %io_lib:format("~s", [Final_string]);
-    [] -> "Rafiki"
+      [H| T] ->
+        V = [string:to_upper(H) | string:to_lower(T)],
+        %remove double quotes on the printed output
+        io:format("~s~n", [V]);
+      [] -> io:format("Rafiki~n")
   end.
 
+
+%function to loop through all the symbols to truncate after
+value(Raw, TrimAfter) -> value_trim(Raw, TrimAfter).
+value_trim(Raw, [H|T]) ->
+  lists:flatten(lists:map(fun (X) -> case trim_after(Raw, X) == Raw of
+                    true -> [];
+                    false -> trim_after(Raw, X)
+                    end
+                end, [H|T])).
+
+
+ %Trim =lists:map(fun(X) -> trim_after(Raw, X) == Raw end, [H|T]),
+  %lists:filter(fun(X) -> X == false end, Trim).
+%value_trim(Raw, [T]).
+
+    %value_trim(V, []) -> V.
+
+trim_after(X, TrimAfter) -> trim_after_flat(lists:flatten(X), TrimAfter).
+trim_after_flat([C| Cs], TrimAfter) ->
+  case lists:member(C, TrimAfter) of
+    false -> [C | trim_after(Cs, TrimAfter)];
+    true -> []
+  end;
+trim_after_flat([], _) ->
+  [].
+
+%Flatten a list and reverse it
+flatten(X) -> lists:reverse(flatten(X, [])).
+
+flatten([], Acc) -> Acc;
+flatten([H|T],Acc) when is_list(H) -> flatten(T, flatten(H,Acc));
+flatten([H|T], Acc) -> flatten(T, [H|Acc]).
 
 %uppercase_head(lists:map(fun zero_to_o/1, Username)).
 %uppercase_head([$o | Tail]) -> [$O | Tail]; uppercase_head(X) -> X.
@@ -107,24 +143,35 @@ parse_name_new(Raw) ->
 
 
 startin(Str1) ->
-  %Str1 = "I am Wanjiku",
   Str3 = string:tokens(string:trim(Str1), " "),
   %Check_member = lists:member("I", Str3),
   ToFilter = lists:map(fun string:casefold/1,
-                       ["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
+                       ["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," , "+",
                 "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is", "40130"]),
   Filtered_list = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Str3),
-  io:format("~p~n", [Filtered_list]),
-  Value = lists:map(fun zero_to_o/1, Filtered_list),
-  %Str2 = string:substr(Str1, 6,7),
-
-  io:format("~p~n", [Value]).
+  io:format("~p~n", [Filtered_list]).
 
 to_truncate(Name) ->
-  List_to_truncate = ["!", "@"],
-                    V = iolist_to_binary(Name),
-                    Result = string:trim( V, trailing, List_to_truncate),
-                    io:format("~p~n",[Result]).
+  V = lists:seq(1,100),
+  Symbols =lists:flatten([$!, $@, $?, $/,V]),
+  %Tokens = string:tokens(string:trim(Name), " "),
+  %List_to_truncate =lists:map(fun (X) -> X end, Symbols),
+  %List_to_truncate = ["!", "@", "?"],
+  %Strip_off = lists:filter(fun (X) -> lists:member(X, List_to_truncate)end, Tokens),
+ % [H] = Strip_off,
+   string:trim(Name, trailing,Symbols ).
+    %io:format("~p~n", [V]).
+
+%trim_after(X, TrimAfter) -> trim_after_flat(lists:flatten(X), TrimAfter).
+
+%trim_after_flat([C | Cs], TrimAfter) ->
+ % case lists:member(C, TrimAfter) of
+  %  false -> [C | trim_after(Cs, TrimAfter)];
+   % true -> []
+  %end;
+%trim_after_flat([], _) ->
+ % [].
+
 
 
 % lists:map(fun (Z) -> string:replace(Z, "0", o)end, Z).
