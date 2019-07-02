@@ -87,32 +87,31 @@ parse_name(Raw) ->
   %end.
 
 parse_name_new(Raw) ->
-TruncateAfter = [[$!], [$"], [$#], [$$], [$%], [$&], [$(], [$)], [$*], [$+], [$-], [$/], [$:],  [$;], [$<], [$=], [$>], [$?], [$@], [$[], [$\]]],
-  %truncate any values after the symbols above
-    Truncated_Value = value(Raw, TruncateAfter),
-      Tokens = string:tokens(string:trim(Truncated_Value), " "),
-      %Return the string without any member of the list below
-        ToFilter = lists:map(fun string:casefold/1,["I","am", "Mimi", ".", "jina", "Langu" "ni", "naitwa", "," "@", "+",
-           "1", "2", "3", "4", "5", "6", "7", "8","9", "my", "name", "is","$", "jiunge","join", "welcome", "yes", "40130", ""] ),
-        Filtered_List = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter)end, Tokens),
-        Value =  lists:flatten((string:replace(Filtered_List, "0", "o"))),
-  case Value of
-      [H| T] ->
-        V = [string:to_upper(H) | string:to_lower(T)],
-        %remove double quotes on the printed output
-        io:format("~s~n", [V]);
-      [] -> io:format("Rafiki~n")
-  end.
+    TruncateAfter = [$!, $", $#, $$, $%, $&, $(, $), $*, $+, $-, $/, $:, $;, $<, $=, $>, $?, $@, $], $., $\\],
+                                                %truncate any values after the symbols above
+    TruncatedValue = lists:takewhile(fun(X) -> not lists:member(X, TruncateAfter) end, Raw),
+    Tokens = string:tokens(string:trim(TruncatedValue), " "),
+                                                %Return the string without any member of the list below
+    ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu" "ni", "naitwa",
+                                                 "1", "2", "3", "4", "5", "6", "7", "8", "9", "my", "name", "is", "jiunge", "join", "welcome", "yes", "40130", ""]),
+    [H | _T] = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter) end, Tokens),
+    Value = lists:flatten(string:replace(H, "0", "o")),
+    case Value of
+        [Head | Tail] ->
+            [string:to_upper(Head) | string:to_lower(Tail)];
+
+        [] -> ("Rafiki~n")
+    end.
 
 
 %function to loop through all the symbols to truncate after
-value(Raw, TrimAfter) -> value_trim(Raw, TrimAfter).
-value_trim(Raw, [H|T]) ->
-  lists:flatten(lists:map(fun (X) -> case trim_after(Raw, X) == Raw of
-                    true -> [];
-                    false -> trim_after(Raw, X)
-                    end
-                end, [H|T])).
+value(Raw, TrimAfter) ->
+  lists:takewhile(fun(X) -> not lists:member(X, TrimAfter) end, Raw).
+  %(lists:map(fun (X) -> case trim_after(Raw, X) == Raw of
+                   % true -> [];
+                    %false -> trim_after(Raw, X)
+                   % end
+               % end, TrimAfter)).
 
 
  %Trim =lists:map(fun(X) -> trim_after(Raw, X) == Raw end, [H|T]),
@@ -121,14 +120,26 @@ value_trim(Raw, [H|T]) ->
 
     %value_trim(V, []) -> V.
 
+%trim_after(X, TrimAfter) -> trim_after_flat(lists:flatten(X), TrimAfter).
+%trim_after_flat([C| Cs], TrimAfter) ->
+%  case lists:member(C, TrimAfter) of
+ %   false -> [C | trim_after(Cs, TrimAfter)];
+  %  true -> []
+  %end;
+%trim_after_flat([], _) ->
+ % [].
+
+
 trim_after(X, TrimAfter) -> trim_after_flat(lists:flatten(X), TrimAfter).
-trim_after_flat([C| Cs], TrimAfter) ->
-  case lists:member(C, TrimAfter) of
-    false -> [C | trim_after(Cs, TrimAfter)];
+trim_after_flat([H| T], TrimAfter) ->
+  case lists:member(H, TrimAfter) of
+    false -> [H | trim_after(T, TrimAfter)];
     true -> []
   end;
 trim_after_flat([], _) ->
   [].
+
+
 
 %Flatten a list and reverse it
 flatten(X) -> lists:reverse(flatten(X, [])).
