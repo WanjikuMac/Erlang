@@ -1,7 +1,8 @@
 - module(geo).
 - export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1,
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
-          trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/0]).
+          trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,
+          help_me/1, insert/2, calculation/1, round/2, optout_question_selector/5]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -123,16 +124,73 @@ old(X) when X >= 16, X =< 104 -> true;
 old(_) -> false.
 
 %if expression
-fine_if() ->
-  if 1 =:=1 ->
-    works
-  end,
-  if 1 =:=2,  1=:= 1 ->
-    works
-  end,
-  if 1 =:= 2, 1 =:= 1 ->
-    false
+fine_if(N) ->
+  if N =:=1 ->
+    works;
+    true -> issa_lie
   end.
+
+help_me(Animal) ->
+  Talk =if Animal == cat -> "meow";
+    Animal == cow -> "mooo";
+    Animal == horse -> "neigh";
+    Animal == dog -> "barks";
+    true -> "hahaha"
+  end,
+  {Animal, "says " ++ Talk ++ "!"}.
+
+insert(X, []) ->
+  [X];
+insert(X, Set) ->
+ case lists:member(X, Set) of
+    true -> Set;
+    false -> [X | Set]
+  end.
+
+
+%calculation(List) ->
+  %List  = [1,2, any],
+  
+  %case List of
+    %[_V, S |_Rest] -> S/10;
+    %[H |_T] -> H/10
+  %end.
+calculation([Yat8]) ->
+    _Weight =  Yat8/10.
+      %case Yat8 of
+       % empty    -> Weight = Yat8I/10 ;
+       % _        -> Weight = Yat8/10
+      %end,
+      %io:format("~s~n", [Yat8]),
+      %[Yat8, Yat8I, Weight].
+    %case List of
+     % Yat8 -> Yat8/10;
+      % Yat8I->  Yat8I/10
+    %end.
+
+round(Number, Precision) ->
+  P = math:pow(10, Precision),
+  round(Number * P) / P.
+
+%Option 1
+optout_question_selector(Value, Optin, Optin2, Soft, Hard) ->
+      case Value of
+        Value when Value >= Hard  -> "The hardoptout";
+        Value when Value >= Soft  -> "The softoptout";
+        _ ->
+          case Optin == "Yes" orelse  Optin2 =="no" of
+              true  -> "Thankyou we shall keep you posted";
+              false -> "expire quietly "
+          end
+      end.
+
+% Option 2
+set_soft_optout(Soft) ->
+  Soft.
+set_hard_optout(Hard) ->
+  Hard.
+
+
 same(X,X) ->
     true;
 same(_,_) ->
