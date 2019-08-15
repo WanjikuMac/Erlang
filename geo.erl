@@ -1,8 +1,8 @@
 - module(geo).
-- export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1,
+- export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1, summarize/1,
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
           trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,
-          help_me/1, insert/2, calculation/1, round/2, optout_question_selector/5]).
+          help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -85,18 +85,18 @@ parse_name(Raw) ->
                                                 %[] -> "Rafiki"
                                                 %end.
                                                 %Test this data
-                                                %"""Gideon.""",
-                                                %"""Peter\n""",
-                                                %"""Karibu kwa MoA-INFO, huduma ya mawaidha ya Wizara ya Kilimo. Huduma hii ni ya kutuma na kupokea ujumbe bila malipo. Jina lako la kwanza ni nani""",
-                                                %"""Welcome to MoA-INFO, the Ministry of Agriculture's information service. It's free to send and receive every SMS. What is your first name""",
+                                                %"Gideon.",
+                                                %"Peter\n",
+                                                %"Karibu kwa MoA-INFO, huduma ya mawaidha ya Wizara ya Kilimo. Huduma hii ni ya kutuma na kupokea ujumbe bila malipo. Jina lako la kwanza ni nani",
+                                                %"Welcome to MoA-INFO, the Ministry of Agriculture's information service. It's free to send and receive every SMS. What is your first name",
 
 parse_name_new(Raw) ->
-    TruncateAfter = [$!, $", $#, $$, $%, $&, $(, $), $*, $+, $-, $/, $:, $;, $<, $=, $>, $?, $@, $], $., $\\],
+    TruncateAfter = [$!, $", $#, $$, $%, $&, $(, $), $*, $+, $-, $/, $:, $;, $<, $=, $>, $?, $@, $], $., $\\, $,],
                                                 %truncate any values after the symbols above
     TruncatedValue = lists:takewhile(fun(X) -> not lists:member(X, TruncateAfter) end, Raw),
     Tokens = string:tokens(string:trim(TruncatedValue), " "),
                                                 %Return the string without any member of the list below
-    ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu" "ni", "naitwa",
+    ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu" "ni", "naitwa", "", "Shamba", "Farm", "Mr", "Mrs.", "Mrs",
                                                  "1", "2", "3", "4", "5", "6", "7", "8", "9", "my", "name", "is", "jiunge", "join", "welcome", "yes", "40130", ""]),
     FilteredList= lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter) end, Tokens),
                                                 %Remove any integer from the filtered list
@@ -104,12 +104,15 @@ parse_name_new(Raw) ->
     io:format("~p~n", [DropInteger]),
                                                 %V = length(DropInteger),
     case DropInteger of
-        [[_W]| _Z ] -> "Rafiki";
+        [[_W]| _Z ] -> empty;
         [H | _T] -> [Head|Tail] = lists:flatten(string:replace(H, "0", "o")),
                     [string:to_upper(Head) | string:to_lower(Tail)];
-        [] -> "Rafiki"
+        [] -> empty
     end.
-
+all_fun(Val) ->
+  case Val of
+    Val -> "yes"
+  end.
 greet(male, Name) ->
     io:format("Hello, Mr. ~s!~n", [Name]);
 greet(female, Name) ->
@@ -122,7 +125,16 @@ head([_I, H| _T]) -> H.
 %guards
 old(X) when X >= 16, X =< 104 -> true;
 old(_) -> false.
-
+summarize(_) ->
+  fun (Initial, Reminder, _DOI)when Initial == "yes" orelse Reminder == "yes" ->
+  "accepted";
+  (Initial, Reminder, _DOI) when Initial == "no" orelse Reminder == "no" ->
+  "declined";
+  (Initial, Reminder, _DOI) when Initial == timeout orelse Reminder == timeout ->
+  "ignored"
+  end
+.
+  
 %if expression
 fine_if(N) ->
   if N =:=1 ->
@@ -155,18 +167,15 @@ insert(X, Set) ->
     %[_V, S |_Rest] -> S/10;
     %[H |_T] -> H/10
   %end.
-calculation([Yat8]) ->
-    _Weight =  Yat8/10.
-      %case Yat8 of
-       % empty    -> Weight = Yat8I/10 ;
-       % _        -> Weight = Yat8/10
-      %end,
-      %io:format("~s~n", [Yat8]),
-      %[Yat8, Yat8I, Weight].
-    %case List of
-     % Yat8 -> Yat8/10;
-      % Yat8I->  Yat8I/10
-    %end.
+calculation([], _) ->
+  [];
+calculation(_, []) ->
+  [];
+calculation([A |As], [B |Bs]) ->
+  [{A,B}| calculation(As,Bs)].
+
+letters() ->
+  lists:map(fun (G) -> [G] end, lists:seq($A, $Z)).
 
 round(Number, Precision) ->
   P = math:pow(10, Precision),
@@ -183,6 +192,20 @@ optout_question_selector(Value, Optin, Optin2, Soft, Hard) ->
               false -> "expire quietly "
           end
       end.
+list([])     -> [];
+list([Elem]) -> [Elem];
+list(List)   -> list(List, length(List), []).
+
+list([], 0, Result) ->
+  Result;
+list(List, Len, Result) ->
+  {Elem, Rest} = nth_rest(random:uniform(Len), List),
+  list(Rest, Len - 1, [Elem|Result]).
+
+nth_rest(N, List) -> nth_rest(N, List, []).
+
+nth_rest(1, [E|List], Prefix) -> {E, Prefix ++ List};
+nth_rest(N, [E|List], Prefix) -> nth_rest(N - 1, List, [E|Prefix]).
 
 % Option 2
 set_soft_optout(Soft) ->
