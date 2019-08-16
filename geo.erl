@@ -2,7 +2,7 @@
 - export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1, summarize/1,
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
           trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,
-          help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1]).
+          help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1, is_string/1]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -109,10 +109,19 @@ parse_name_new(Raw) ->
                     [string:to_upper(Head) | string:to_lower(Tail)];
         [] -> empty
     end.
+
 all_fun(Val) ->
   case Val of
-    Val -> "yes"
+    Val  -> "yes"
   end.
+
+is_string([C|T]) when (C >= 0) and (C =< 255) ->
+  is_string(T);
+is_string([]) ->
+  true;
+is_string(_) ->
+  false.
+
 greet(male, Name) ->
     io:format("Hello, Mr. ~s!~n", [Name]);
 greet(female, Name) ->
@@ -208,10 +217,10 @@ nth_rest(1, [E|List], Prefix) -> {E, Prefix ++ List};
 nth_rest(N, [E|List], Prefix) -> nth_rest(N - 1, List, [E|Prefix]).
 
 % Option 2
-set_soft_optout(Soft) ->
-  Soft.
-set_hard_optout(Hard) ->
-  Hard.
+%set_soft_optout(Soft) ->
+ % Soft.
+%set_hard_optout(Hard) ->
+ % Hard.
 
 
 same(X,X) ->
