@@ -1,7 +1,7 @@
 -module(test_mnesia).
--export([do_this_once/0, add_shop_item/3]).
+-export([do_this_once/0, add_shop_item/3, remove_row/1]).
 
--record(shop, {item,quantity, cost}).
+-record(shop, {item, quantity, cost}).
 -record(cost, {name, price}).
 -record(design, {name, cost}).
 
@@ -24,3 +24,15 @@ add_shop_item(Name, Quantity, Cost) ->
 				mnesia:write(Row)
 		 end,
 	mnesia:transaction(F).
+%hoe to remove a row (Item is the primary key of the table)
+remove_row(Item)->
+	Oid ={shop, Item},
+	F = fun() ->
+			mnesia:delete(Oid)
+			end,
+	mnesia:transaction(F).
+
+
+%how to select specific data and view it from a table ?
+%demo(select_some) ->
+%	do(qlc:q([{X#shop.item, X#shop.quantity} || X <- mnesia:table(shop)])).
