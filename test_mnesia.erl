@@ -1,5 +1,5 @@
 -module(test_mnesia).
--export([do_this_once/0, add_shop_item/3, remove_row/1, add_design/2, add_cost/2, farmer/1, reset_tables/0, do/1, demo/1]).
+-export([do_this_once/0, add_shop_item/3, remove_row/1, add_design/2, add_cost/2, farmer/1, reset_tables/0, do/1]).
 
 -record(shop, {item, quantity, cost}).
 -record(cost, {name, price}).
@@ -13,7 +13,7 @@
 do_this_once() ->
 	mnesia:create_schema([node()]),
 	mnesia:start(),
-	mnesia:create_table(shop, [{attributes, record_info(fields, shop)}]),
+	mnesia:create_table(shop, [{attributes, record_info(fields, shop)}, {disc_copies, [node() | nodes()]}]),
 	mnesia:create_table(cost, [{attributes, record_info(fields, cost)}]),
 	mnesia:create_table(design,[{attributes, record_info(fields, design)}]),
 	mnesia:stop().
@@ -109,5 +109,5 @@ do(Q) ->
 	Val.
 
 %how to select specific data and view it from a table ?
-demo(select_shop) ->
-do(qlc:q([{X#shop.item, X#shop.quantity} || X <- mnesia:table(shop)])).
+%%demo(select_shop) ->
+%%do(qlc:q([{X#shop.item, X#shop.quantity} || X <- mnesia:table(shop)])).
