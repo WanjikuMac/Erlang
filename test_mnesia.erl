@@ -1,5 +1,5 @@
 -module(test_mnesia).
--export([do_this_once/0, add_shop_item/3, remove_row/1, add_design/2, add_cost/2]).
+-export([do_this_once/0, add_shop_item/3, remove_row/1, add_design/2, add_cost/2, farmer/1, reset_tables/0, do/1, demo/1]).
 
 -record(shop, {item, quantity, cost}).
 -record(cost, {name, price}).
@@ -50,6 +50,64 @@ remove_row(Item)->
 	mnesia:transaction(F).
 
 
+%Aborting a transaction
+farmer(Nwant) ->
+	%% Nwant = The number of oranges the farmer wants
+	F = fun() ->
+		%% Find the number of apples the farmer has and should give to get oranges
+		
+			[Apple] = mnesia:read({shop, apple}),
+			Napples = Apple#shop.quantity,
+			Apple1 = Apple#shop{quantity = Napples + 2*Nwant},
+		%% update the database
+		mnesia:write(Apple1),
+		
+		%%Find rhe number of oranges
+			[Orange] = mnesia:read({shop, orange}),
+			NOranges = Orange#shop.quantity,
+		if NOranges >= Nwant ->
+			N1 =NOranges- Nwant,
+				Orange1 = Orange#shop{quantity = N1},
+			%% Update the database
+			mnesia:write(Orange1);
+			true ->
+				%%oops not enough oranges
+			mnesia:abort(Orange)
+		end
+	end,
+mnesia:transaction(F).
+	
+% Loading test data
+example_tables() ->
+	[%% The shop table
+		{shop, apple, 20, 2.3},
+		{shop, orange, 100,3.8},
+		{shop, pear, 200, 3.6},
+		{shop, banana, 420, 4.5},
+		{shop, potato, 456, 1.2},
+		% The cost table
+		{cost, apple, 1.5},
+		{cost, orange, 2.4},
+		{cost, pear, 2.2},
+		{cost, banana, 1.5},
+		{cost, potato, 0.6}
+    ].
+
+%This function writes data from the examples to mnesia
+reset_tables() ->
+	mnesia:clear_table(shop),
+	mnesia:clear_table(cost),
+	F = fun() ->
+		lists:foreach(fun mnesia:write/1, example_tables())
+			end,
+	mnesia:transaction(F).
+
+% The do function
+do(Q) ->
+	F = fun() -> qlc:e(Q) end,
+	{atomic, Val} = mnesia:transaction(F),
+	Val.
+
 %how to select specific data and view it from a table ?
-%demo(select_some) ->
-%	do(qlc:q([{X#shop.item, X#shop.quantity} || X <- mnesia:table(shop)])).
+demo(select_shop) ->
+do(qlc:q([{X#shop.item, X#shop.quantity} || X <- mnesia:table(shop)])).
