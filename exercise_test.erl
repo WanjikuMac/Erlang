@@ -1,6 +1,6 @@
 -module(exercise_test).
 
--export([setup_db/0, add_abuse/2, add_tips/3, add_users/3, read_info/1]).
+-export([setup_db/0, add_abuse/2, add_tips/3, add_users/3, read_info/1, read_info_abuse/1, read_info_tips/1]).
 
 -record(users, {name, email_address :: string(), password}).
 -record(tips, {site_url, description, date_of_review}).
