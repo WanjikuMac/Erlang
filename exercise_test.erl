@@ -1,6 +1,6 @@
 -module(exercise_test).
 
--export([setup_db/0, add_abuse/2, add_tips/3, add_users/3, read_info/1, read_info_abuse/1, read_info_tips/1]).
+-export([setup_db/0, add_abuse/2, add_tips/3, add_users/3, read_info/1, read_info_abuse/1, read_info_tips/1, select_all/0]).
 
 -record(users, {name, email_address :: string(), password}).
 -record(tips, {site_url, description, date_of_review}).
@@ -8,9 +8,9 @@
 
 setup_db()->
 
-mnesia:create_table(users,[{attributes, record_info(fields, users)},{disc_copies, [node()]}]),
-mnesia:create_table(tips, [{attributes, record_info(fields, tips)}, {disc_copies, [node()]}]),
-mnesia:create_table(abuse, [{attributes, record_info(fields, abuse)}, {disc_copies, [node()]}]).
+mnesia:create_table(users,[{attributes, record_info(fields, users)},{disc_copies, [node(), nodes()]}]),
+mnesia:create_table(tips, [{attributes, record_info(fields, tips)}, {disc_copies, [node(), nodes()]}]),
+mnesia:create_table(abuse, [{attributes, record_info(fields, abuse)}, {disc_copies, [node(), nodes()]}]).
 
 %Routines to write to the tables
 
@@ -52,3 +52,11 @@ read_info_tips(Url) ->
 		mnesia:read({tips, Url})
 	    end,
 	mnesia:transaction(F).
+
+select_all() ->
+	mnesia:transaction(
+		fun() ->
+			P=qlc:e(qlc:q([E || E <- mnesia:table(users)])),      %query to select all data from table named 'tableName'
+			io:format(" ~p ~n ", [P]) % Prints table data on terminal
+			%to_file("fileName.txt",P) % to_file method writes the data to file
+		end ).
