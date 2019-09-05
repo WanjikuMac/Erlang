@@ -1,5 +1,5 @@
 -module(company).
--export([setup_db/0, mk_projs/2, insert_emp/3]).
+-export([setup_db/0, mk_projs/2, insert_emp/3, raise_salary/2, add_empl/6]).
 
 -record(employee, {emp_no, name, salary, sex, phone, room_no}).
 -record(dept, {id, dept_name}).
@@ -27,6 +27,25 @@ insert_emp(Emp, DeptId, ProjNames) ->
 	mnesia:transaction(F).
 
 mk_projs(Ename, [ProjName | Tail]) ->
-	mnesia:write(#in_proj{emp = Ename, proj_name = ProjName}),
+	V = #in_proj{emp = Ename, proj_name = ProjName},
+	mnesia:write(V),
 	mk_projs(Ename, Tail);
 	mk_projs(_, []) -> ok.
+
+%% function to raise employee salary
+raise_salary(Eno, Raise) ->
+	F= fun() ->
+		%why is this in a list
+		[E] = mnesia:read(employee, Eno, write),
+		Salary = E#employee.salary + Raise,
+		New = E#employee{salary = Salary},
+		mnesia:write(New)
+		end,
+	mnesia:transaction(F).
+
+add_empl(Emp_no, Name, Salary, Sex, Phone, Room) ->
+	R =#employee{emp_no = Emp_no, name = Name, salary = Salary, sex = Sex, phone = Phone, room_no = Room},
+	F = fun() ->
+		mnesia:write(R)
+		end,
+	mnesia:transaction(F).
