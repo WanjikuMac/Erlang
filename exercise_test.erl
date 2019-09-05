@@ -47,8 +47,8 @@ read_info_abuse(Name) ->
 	    end,
 	mnesia:transaction(F).
 
-read_info_tips(Desc) ->
+read_info_tips(Url) ->
 	F = fun () ->
-		mnesia:read({tips, Des})
+		mnesia:read({tips, Url})
 	    end,
 	mnesia:transaction(F).
