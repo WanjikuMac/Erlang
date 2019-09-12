@@ -1,5 +1,5 @@
 - module(geo).
-- export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1, summarize/1,
+- export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1, summarize/1,get_time_micro/0,
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
           trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,
           help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1, is_string/1]).
@@ -364,3 +364,12 @@ zero_to_o(x) -> x.
                                                 %spacing in between characters
 intersperse([C], _) -> [C];
 intersperse([C|Rest], Sep) -> [C | Sep] ++ intersperse(Rest, Sep).
+
+
+-spec get_time_micro() -> {{integer(), integer(), integer()}, {integer(), integer(), float()}}.
+
+get_time_micro() ->
+  Timestamp = erlang:timestamp(),
+  {_, _, Micro} = Timestamp,
+  {Date, {HH, MM, SS}} = calendar:now_to_universal_time(Timestamp),
+  {Date, {HH, MM, SS + Micro * 0.000001}}.
