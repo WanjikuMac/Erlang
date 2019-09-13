@@ -1,6 +1,6 @@
 -module(company).
 -export([setup_db/0, mk_projs/2, insert_emp/3, raise_salary/2, add_empl/6,raise_trial/2, read_emp_table/1,
-         read_proj/1, add_proj/2]).
+         read_proj/1, add_proj/2, read_emp/0, read_list_emp/0]).
 
 -record(employee, {emp_no, name, salary, sex, phone, room_no}).
 -record(dept, {id, dept_name}).
@@ -44,6 +44,7 @@ mk_projs(Ename, [ProjName | Tail]) ->
                                                 % lists:map(mk_projs(Ename,ProjNames), Ename)
 mk_projs(_, []) -> ok.
 
+
 %% function to raise employee salary
 raise_salary(Eno, Raise) ->
     F= fun() ->
@@ -55,7 +56,22 @@ raise_salary(Eno, Raise) ->
        end,
     mnesia:transaction(F).
 
+read_emp() ->
+  F =fun() ->
+     V = mnesia:all_keys(employee),
+    lists:map(fun(X) -> mnesia:read(employee, X)end,V)
+    %mnesia:all_keys(employee)
+      end,
+mnesia:transaction(F).
 
+%list_emp_table()->
+
+read_list_emp() ->
+  F =fun() ->
+    %mnesia:dirty_first(employee),
+   mnesia:dirty_all_keys(employee)
+     end,
+  mnesia:transaction(F).
 
                                                 %This function reads the employee table when given the employees name
 read_emp_table(Name) ->
