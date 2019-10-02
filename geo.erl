@@ -96,7 +96,7 @@ parse_name_new(Raw) ->
     TruncatedValue = lists:takewhile(fun(X) -> not lists:member(X, TruncateAfter) end, Raw),
     Tokens = string:tokens(string:trim(TruncatedValue), " "),
                                                 %Return the string without any member of the list below
-    ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu" "ni", "naitwa", "", "Shamba", "Farm", "Mr", "Mrs.", "Mrs",
+    ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu", "ni", "naitwa", "", "Shamba", "Farm", "Mr", "Mrs.", "Mrs",
                                                  "1", "2", "3", "4", "5", "6", "7", "8", "9", "my", "name", "is", "jiunge", "join", "welcome", "yes", "40130", ""]),
     FilteredList= lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter) end, Tokens),
                                                 %Remove any integer from the filtered list
