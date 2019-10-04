@@ -1,7 +1,7 @@
 - module(geo).
 - export([for/3, show/1, parse_name/1, parse_name_new/1, sum/1, test/1, map/2, cost/1, summarize/1,get_time_micro/0,
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
-          trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,
+          trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,name_resp/1,
           help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1, is_string/1]).
 
 for(Max, Max, F) -> [F(Max)];
@@ -373,3 +373,35 @@ get_time_micro() ->
   {_, _, Micro} = Timestamp,
   {Date, {HH, MM, SS}} = calendar:now_to_universal_time(Timestamp),
   {Date, {HH, MM, SS + Micro * 0.000001}}.
+
+%name resp handler version two
+name_resp(Raw) ->
+  TruncateAfter = [$!, $", $#, $$, $%, $&, $(, $), $*, $+, $-, $/, $:, $;, $<, $=, $>, $?, $@, $], $., $\\],
+  %truncate any values after the symbols above
+  TruncatedValue = lists:takewhile(fun(X) -> not lists:member(X, TruncateAfter) end, Raw),
+  io:format("~p~n", [TruncatedValue]),
+  Tokens = string:tokens(string:trim(TruncatedValue), " "),
+  io:format("~p~n", [Tokens]),
+  %Return the string without any member of the list below
+  ToFilter = lists:map(fun string:casefold/1, ["I", "am", "Mimi", "jina", "Langu" , "ni", "naitwa","FARM","shamba", " Mr.",
+    "my", "name", "is", "jiunge", "join", "welcome", "yes", "40130"]),
+  FilteredList= lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter) end, Tokens),
+  
+  %Drop any integers present
+  DropInteger = lists:map(fun (X) -> lists:filter(fun(A) -> A < $0 orelse A > $9 end, X)end, FilteredList),
+  io:format("~p~n", [DropInteger]),
+  
+  FinalFilter = lists:filter(fun(X) -> not lists:member(string:casefold(X), ToFilter) end, DropInteger),
+  case FinalFilter of
+    %Return rafiki if the name contains one character
+    [[_W]| _Rest] -> "Rafiki";
+    
+    %return Tail value when head is empty
+    [[] | T] ->[Head|Tail] = lists:flatten(string:replace(T, "0", "o")),
+      [string:to_upper(Head) | string:to_lower(Tail)];
+    
+    %Return name if the it contains more than one character
+    [H| _T] -> [Head|Tail] = lists:flatten(string:replace(H, "0", "o")),
+      [string:to_upper(Head) | string:to_lower(Tail)];
+    [] -> "Rafiki"
+  end.
