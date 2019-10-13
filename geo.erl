@@ -3,6 +3,7 @@
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
           trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,name_resp/1,
           help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1, is_string/1]).
+- export([add/2, one/0, two/0, increment/1]).
 
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
@@ -405,3 +406,47 @@ name_resp(Raw) ->
       [string:to_upper(Head) | string:to_lower(Tail)];
     [] -> "Rafiki"
   end.
+
+one() -> 1.
+two() -> 2.
+
+add(X,Y) -> fun geo:one/0 + fun geo:two/0.
+
+increment([]) -> [];
+increment([H | T]) -> [H + 1 | increment(T)].
+% UpdateFname =
+%   fun ({user_vars, UserData}) ->
+%      {user_vars, lists:map(CleanUp, UserData)};
+% ({Label, Content}) ->
+%    {Label, Content}
+%end,
+
+
+
+%when Var == first_name ->
+
+%case {user_var, lists:map(fun({Var, Val}) -> Var == first_name end, Data)} of
+%   true -> {user_var, {Var, name_resp(Val)}};
+
+%case ({Fname, Value}) of
+%   fun ({Var, Val}) when {Var} == first_name ->
+%       name_resp(Val);
+%  ({Var, Val}) ->
+%      {Var, Val}
+% end,
+%end.
+% NewName = fun({Lab, Value}) wab == first_name ->
+%     lists:map(name_rh, Value);
+%   ({Label, Content}) ->
+%      {Label, Content}
+%end,
+
+%   lists:map(name_rh(), Value);
+
+
+%[Var1, Var2, Var3, NewName].
+
+%(paddy@caj)2> {resp_handler, Parse} = survey_tk:name_rh().
+%{resp_handler,#Fun<survey_tk.8.36916771>}
+%(paddy@caj)3> Parse("123 shamba wanjiku").
+%"Wanjiku"
