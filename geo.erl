@@ -3,8 +3,8 @@
           qsort/1, pytha/1, perms/1, area/1, startin/1, intersperse/2, zero_to_o/1, to_truncate/1, trim_after/2,
           trim_after_flat/2, flatten/1, value/1, many/1, greet/2, head/1, same/2, valid_time/1, old/1, fine_if/1,name_resp/1,
           help_me/1, insert/2, calculation/2, round/2, optout_question_selector/5, letters/0, list/1, all_fun/1, is_string/1]).
-- export([add/2, one/0, two/0, increment/1]).
-
+- export([add/2, one/0, two/0, increment/1, decrement/1]).
+- export([map1/2, incr/1,decre/1, prep/1, base/1, base/0]).
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F) -> [F(I) | for(I+1,Max, F)].
 
@@ -410,10 +410,38 @@ name_resp(Raw) ->
 one() -> 1.
 two() -> 2.
 
-add(X,Y) -> fun geo:one/0 + fun geo:two/0.
+%To compile this, run the following geo:add(fun geo:one/0, fun geo:two/0)
+add(X,Y) -> X() + Y().
 
 increment([]) -> [];
 increment([H | T]) -> [H + 1 | increment(T)].
+
+decrement([]) -> [];
+decrement([H | T]) -> [H -1 |decrement([T])].
+
+
+%abstraction
+map1(_, []) -> [];
+map1(F, [H|T]) -> [F(H) | map1(F, T)].
+
+incr(X) -> X +1.
+decre(X) -> X - 1.
+
+base(A) ->
+  B =A +1,
+  F = fun() -> A * B end,
+  F().
+
+prep =
+  fun(Room) ->
+io:format("Alarm set in ~s. ~n", [Room]),
+fun () -> io:format("Alarm tripped in ~s! call Batman! ~n", [Room]) end
+end.
+
+base() ->
+  A = 1,
+  (fun(A) -> A = 2 end)(2).
+
 % UpdateFname =
 %   fun ({user_vars, UserData}) ->
 %      {user_vars, lists:map(CleanUp, UserData)};
