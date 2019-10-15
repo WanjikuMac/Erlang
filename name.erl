@@ -6,6 +6,7 @@
 -export([uname/0, double/1, f2c/1, c2f/1, convert/2, area/1, list1/1,
    max_num/1, min_max/1, even/0, odd/0, math_fun/1, filter/2, filter_two/1,
   filter_element/1, split/1, map_search_pred/1, even/1, old_men/1]).
+-export([maximum/1, minimum/1, summation/1, summin/1, fold/3, reverse/1, map3/2]).
 
 %only keep even numbers
 even(L) -> lists:reverse(even(L, [])).
@@ -30,6 +31,39 @@ filter(Pred, [H|T], Acc) ->
     true -> filter(Pred, T, [H |Acc]);
     false -> filter(Pred, T, Acc)
   end.
+
+% find the maximum of a list
+maximum([H |T]) -> max2(T, H).
+max2([], Max) -> Max;
+max2([H|T], Max) when H > Max -> max2(T, H);
+max2([_|T], Max) -> max2(T, Max).
+
+%find the minimum of a list
+minimum([H|T]) -> mini(T, H).
+mini([], Min) -> Min;
+mini([H|T], Min)  when H < Min -> mini(T, H);
+mini([_|T], Min) -> mini(T, Min).
+
+%sum of all the elements in a list
+summation([H |T]) -> summ(H, T).
+summ(Sum, []) -> Sum;
+summ(Head, [H|T]) ->summ(Head + H, T ).
+
+%solution two to sum all elements in a list
+summin(L) -> summi(L, 0).
+summi([], Sum) -> Sum;
+summi([H|T], Sum) -> summi(T, H+Sum).
+
+fold(_, Start, []) -> Start;
+fold(F, Start, [H|T]) -> fold(F, F(H, Start),T).
+
+reverse(L) ->
+  fold(fun(X, Acc) -> [X |Acc] end, [], L).
+
+map3(F, L) ->
+  reverse(fold(fun(X, Acc) -> [F(X) | Acc] end, [], L)).
+
+filter2() ->
 
 uname()->
    io:fwrite(" Hello\n ", []).
