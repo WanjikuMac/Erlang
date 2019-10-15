@@ -5,7 +5,31 @@
 
 -export([uname/0, double/1, f2c/1, c2f/1, convert/2, area/1, list1/1,
    max_num/1, min_max/1, even/0, odd/0, math_fun/1, filter/2, filter_two/1,
-  filter_element/1, split/1, map_search_pred/1]).
+  filter_element/1, split/1, map_search_pred/1, even/1, old_men/1]).
+
+%only keep even numbers
+even(L) -> lists:reverse(even(L, [])).
+even([], Acc) -> Acc;
+even([H|T], Acc) when H rem 2 == 0 ->
+  even(T, [H |Acc]);
+even([_ |T], Acc) ->
+  even(T, Acc).
+
+% only keep men older than 60
+old_men(L) -> lists:reverse(old_men(L, [])).
+old_men([], Acc) -> Acc;
+old_men([Person = {male, Age} | People], Acc) when Age > 60 ->
+  old_men(People, [Person | Acc]);
+old_men([_ | People], Acc) ->
+  old_men(People, Acc).
+
+filter(Pred, L) -> lists:reverse(filter(Pred, L, [])).
+filter(_, [], Acc) -> Acc;
+filter(Pred, [H|T], Acc) ->
+  case Pred(H) of
+    true -> filter(Pred, T, [H |Acc]);
+    false -> filter(Pred, T, Acc)
+  end.
 
 uname()->
    io:fwrite(" Hello\n ", []).
@@ -56,8 +80,8 @@ math_fun(X) ->
    io:format("~p~n", [Y]).
 
 
-filter(_, []) -> [];
-filter(F, [H|T]) -> [F(H) | filter(F ,T)].
+%filter(_, []) -> [];
+%filter(F, [H|T]) -> [F(H) | filter(F ,T)].
   %lists:filter(fun(X) -> X rem 3 == 0 end, L).
 
 %returns true for the values are true
