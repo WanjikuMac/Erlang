@@ -6,7 +6,7 @@
 -export([uname/0, double/1, f2c/1, c2f/1, convert/2, area/1, list1/1,
    max_num/1, min_max/1, even/0, odd/0, math_fun/1, filter/2, filter_two/1,
   filter_element/1, split/1, map_search_pred/1, even/1, old_men/1]).
--export([maximum/1, minimum/1, summation/1, summin/1, fold/3, reverse/1, map3/2]).
+-export([maximum/1, minimum/1, summation/1, summin/1, fold/3, reverse/1, map3/2, filter2/2]).
 
 %only keep even numbers
 even(L) -> lists:reverse(even(L, [])).
@@ -63,7 +63,14 @@ reverse(L) ->
 map3(F, L) ->
   reverse(fold(fun(X, Acc) -> [F(X) | Acc] end, [], L)).
 
-filter2() ->
+filter2(Pred, L) ->
+  F = fun(X, Acc) ->
+    case Pred(X) of
+      true -> [X | Acc];
+      false -> Acc
+    end
+  end,
+reverse(fold(F, [], L)).
 
 uname()->
    io:fwrite(" Hello\n ", []).
