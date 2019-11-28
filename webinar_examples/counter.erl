@@ -4,7 +4,7 @@
 -export([init/1,handle_event/2, handle_call/2, code_change/3, handle_info/2, terminate/2]).
 
 init(_Args) ->
-	io:put_chars("** 0: initialize to zero"),
+	io:put_chars("** 0: initialize to zero~n"),
 	{ok, 0}.
 
 handle_event(Event, Count) ->
