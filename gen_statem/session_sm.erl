@@ -111,3 +111,21 @@ handle_event({_,_, Ld}) ->
 	{keep_state, Ld}.
 
 %support routines
+binary_key(N) ->
+	Cs =erlang:list_to_tuple(?CHARS),
+	CsLen = erlang:tuple_size((Cs)),
+	Key = [pick(CsLen, Cs) || _  <- lists:seq(1,N)],
+	erlang:list_to_binary(Key).
+
+dirty_seed() ->
+	<<X:32, Y:32, Z:32>> = crypto:strong_rand_bytes(12),
+	rand:seed(exs1024s, {X,Y,Z}).
+
+pick(K, Ts) ->
+	C =rand:uniform(K),
+	erlang:element(C, Ts).
+
+session_duration(alive) ->
+	timer:hms(1,10,0);
+session_duration(waiting) ->
+	timer:hms(0,10,0).
