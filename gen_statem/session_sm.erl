@@ -28,8 +28,8 @@ bump()  ->
 	gen_statem:cast(?REGISTERED, bump).
 request(key) ->
 	gen_statem:call(?REGISTERED, key);
-request(depature) ->
-	gen_statem:call(?REGISTERED, departure).
+request(departure) ->
+	gen_statem:cast(?REGISTERED, departure).
 request(entry, Key) ->
 	gen_statem:call(?REGISTERED, {entry, Key}).
 
@@ -38,7 +38,7 @@ init(<<Email/bitstring>>) ->
 	ok = handle(start_statem),
 	{ok, Ld} = handle(new_session, Email),
 	Timeout = session_duration(waiting),
-	{ok, waiting, Ld, [state_timeout, Timeout, hard_stop]}.
+	{ok, waiting, Ld, [{state_timeout, Timeout, hard_stop}]}.
 
 callback_mode() ->
 	state_functions.
@@ -49,8 +49,8 @@ terminate(_Reason, State, #session{}=Ld) ->
 	handle(stop_statem).
 
 % state-callback routines
-alive(cast, bump, #session{} = Ld) ->
-	ok = handle(bump_sessiom, Ld),
+alive(cast, bump, #session{}=Ld) ->
+	ok = handle(bump_session, Ld),
 	Timeout = session_duration(alive),
 	{keep_state, Ld, [{state_timeout, Timeout, hard_stop}]};
 alive(cast, departure, #session{}=Ld) ->
@@ -97,7 +97,7 @@ handle(new_session, <<Email/bitstring>>) ->
 handle(start_session, {Key, #session{key=Key}=Ld}) ->
 	io:format(user, "*** Start session: ~p~n", [Key]),
 	{ok, Ld};
-handle(stop_session, #session{key=Key}=Ld) ->
+handle(stop_session, #session{key=Key}) ->
 	io:format(user, "*** Stop session: ~p~n", [Key]),
 	{ok, #session{}}.
 
