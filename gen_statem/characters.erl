@@ -30,7 +30,7 @@ not_quoted() ->
 
 %%callback routines
 init(StringValue) ->
-	 New =convert_uppercase(value_upper, StringValue),
+	 New = convert_uppercase(value_upper, StringValue),
 	%Timeout = session_duration(),
 	session_duration(waiting),
 	{ok, waiting, New}.
@@ -46,15 +46,15 @@ start_state(cast, string_value, StringValue) ->
 waiting_state({call, From}, waiting) ->
 	Reply = {reply, From},
 	Timeout = session_duration(waiting),
-	{keep_state, waiting, [Reply, {Timeout}]};
+	{keep_state, [Reply, {Timeout}]};
 waiting_state(stop, state_timeout) ->
 	{stop, string_value}.
 
 %% business routines
 convert_uppercase(value_upper, StringValue) ->
 	Upper = string:to_upper(StringValue),
-	Resp =io:format("~p~n", [Upper]),
-	{ok, Resp}.
+	io:format("~p~n", [Upper]).
+
 session_duration(waiting) ->
 	timer:hms(0,0,1).
 	
