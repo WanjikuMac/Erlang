@@ -128,4 +128,4 @@ pick(K, Ts) ->
 session_duration(alive) ->
 	timer:hms(1,10,0);
 session_duration(waiting) ->
-	timer:hms(0,10,0).
+	timer:hms(1,10,0).

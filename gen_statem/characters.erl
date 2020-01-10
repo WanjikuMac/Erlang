@@ -30,10 +30,10 @@ not_quoted() ->
 
 %%callback routines
 init(StringValue) ->
-	 New = convert_uppercase(value_upper, StringValue),
+	% New = convert_uppercase(value_upper, StringValue),
 	%Timeout = session_duration(),
-	session_duration(waiting),
-	{ok, waiting, New}.
+	%session_duration(waiting),
+	{ok, waiting, StringValue}.
 
 callback_mode() ->
 	state_functions.
@@ -56,5 +56,5 @@ convert_uppercase(value_upper, StringValue) ->
 	io:format("~p~n", [Upper]).
 
 session_duration(waiting) ->
-	timer:hms(0,0,1).
+	timer:hms(0,0,10).
 	
