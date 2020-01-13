@@ -28,7 +28,7 @@ terminate(_Reason, State, _Data) ->
 	ok.
 
 %%state routines
-locked(cast, {button, Button},#{code :=Code, length := Length, buttons := Buttons} = Data) ->
+locked(cast, {button, Button},#{code := Code, length := Length, buttons := Buttons} = Data) ->
 	NewButtons =
 		if
 			length(Buttons) < Length ->
@@ -39,8 +39,8 @@ locked(cast, {button, Button},#{code :=Code, length := Length, buttons := Button
 	if
 		NewButtons =:= Code ->
 			do_unlock(),
-			{next_state, open, Data#{buttons := []},
-			[{state_timeout, 10000, lock}]};
+			%{next_state, NewStateName, NewData, Actions}
+			{next_state, open, Data#{buttons := []}, [{state_timeout, 10000, lock}]};
 		true ->
 			{next_state, locked, Data#{buttons := NewButtons}}
 	end.
@@ -49,7 +49,7 @@ open(state_timeout, lock, Data) ->
 	do_lock(),
 	{next_state, locked, Data};
 open(cast, {button, _Button}, Data) ->
-	{next_state, oprn, Data}.
+	{next_state, open, Data}.
 
 
 %%support routines
