@@ -7,14 +7,14 @@
 -export([locked/3, open/3]).
 
 
-%% api routines
+%% api routines (client side)
 start_link(Code) ->
 	gen_statem:start_link({local, ?NAME}, ?MODULE, Code, []).
 button(Button) ->
 	gen_statem:cast(?NAME, {button, Button}).
 
 
-%callback routines
+%callback routines (server side)
 init(Code) ->
 	do_lock(),
 	Data = #{code => Code, length => length(Code), buttons => []},
