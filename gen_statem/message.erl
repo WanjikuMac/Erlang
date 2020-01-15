@@ -16,8 +16,7 @@ send_msg() ->
 %server side routines
 init(Data)->
 	has_msg(),
-	[ _H | T] = Data ,
-	{ok, has_message, T}.
+	{ok, has_message, Data}.
 
 callback_mode() ->
 	state_functions.
