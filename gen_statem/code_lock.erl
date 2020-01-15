@@ -2,7 +2,7 @@
 -behavior(gen_statem).
 -define(NAME, code_lock).
 
--export([start_link/1, button/1]).
+-export([start_link/1, button/1, code_length/0]).
 -export([init/1, callback_mode/0, terminate/3]).
 -export([locked/3, open/3]).
 
@@ -12,7 +12,9 @@ start_link(Code) ->
 	gen_statem:start_link({local, ?NAME}, ?MODULE, Code, []).
 button(Button) ->
 	gen_statem:cast(?NAME, {button, Button}).
-
+%handles no state specific event
+code_length() ->
+	gen_statem:call(?NAME, code_length).
 
 %callback routines (server side)
 init(Code) ->
@@ -43,14 +45,20 @@ locked(cast, {button, Button},#{code := Code, length := Length, buttons := Butto
 			{next_state, open, Data#{buttons := []}, [{state_timeout, 10000, lock}]};
 		true ->
 			{next_state, locked, Data#{buttons := NewButtons}}
-	end.
+	end;
+locked(EventType, EventContent, Data) ->
+	handle_common(EventType, EventContent, Data).
 
 open(state_timeout, lock, Data) ->
 	do_lock(),
 	{next_state, locked, Data};
 open(cast, {button, _Button}, Data) ->
-	{next_state, open, Data}.
+	{next_state, open, Data};
+open(EventType, EventContent, Data) ->
+	handle_common(EventType, EventContent, Data).
 
+handle_common({call, From}, code_length, #{code := Code} = Data) ->
+	{keep_state, Data, [{reply, From, length(Code)}]}.
 
 %%support routines
 do_lock() ->
