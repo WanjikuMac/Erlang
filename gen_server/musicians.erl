@@ -57,7 +57,7 @@ init([Role, Skill]) ->
 	TimeToPlay = random:uniform(3000),
 	Name = pick_name(),
 	StrRole = atom_to_list(Role),
-	io:format("Musician ~s, palying the ~s entered the room ~n", [Name,StrRole]),
+	io:format("Musician ~s, playing the ~s entered the room ~n", [Name,StrRole]),
 	{ok, #state{name=Name, role=StrRole, skill= Skill}, TimeToPlay}.
 
 pick_name() ->
