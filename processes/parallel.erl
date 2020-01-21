@@ -4,9 +4,10 @@
 test(Number) ->
 	MyPID = self(),
 	io:format("~p~n", [MyPID]),
-	spawn(fun() -> double(MyPID, Number)end),
+	PID = spawn(fun() -> double(MyPID, Number)end),
+	io:format("~p~n", [PID]),
 	receive
-		{answer, Val} -> {"Child process said", Val}
+		{answer, Val} -> {"Child process said " , Val}
 	end.
 
 double(Parent, Number) ->
