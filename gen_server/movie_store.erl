@@ -24,8 +24,8 @@ handle_call({checkout, Customer, Movie}, _From, Tab) ->
 							 [] ->
 								 ets:insert(Tab, {Customer, Movie}),
 								 {ok, Movie};
-							 [{Customer, OtherMovie}] ->
-								 {already_checked_out, OtherMovie}
+							 [{Customer, Movie}] ->
+								 {already_checked_out, Movie}
 	           end,
 	{reply, Response, Tab};
 handle_call({lookup, Customer}, _From, Tab) ->
