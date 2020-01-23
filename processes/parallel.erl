@@ -1,10 +1,22 @@
 -module(parallel).
--export([test/1]).
+-export([test/1, test_inner/1, test_trial/1]).
+
+test_inner(0) ->
+	io:format("Reached 0~n", []),
+	ok;
+test_inner(Number) ->
+	io:format("~p~n", [Number]),
+	timer:sleep(1000),
+	test_inner(Number -1).
+
+test_trial(Number) ->
+	{ok, spawn_link(parallel, test_inner, [Number])}.
+
 
 test(Number) ->
 	MyPID = self(),
 	io:format("~p~n", [MyPID]),
-	PID = spawn(fun() -> double(MyPID, Number)end),
+	PID = {ok, spawn(fun() -> double(MyPID, Number)end)},
 	io:format("~p~n", [PID]),
 	receive
 		{answer, Val} -> {"Child process said " , Val}
