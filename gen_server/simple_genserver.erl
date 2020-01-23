@@ -4,26 +4,31 @@
 -define(CH3, simple_genserver).
 
 -export([start_link/0]).
--export([add/1]).
+-export([add/2, get/1]).
 -export([init/1, handle_call/3, handle_cast/2]).
 
 %% api routines
 start_link() ->
 	gen_server:start_link({local, ?CH3}, ?CH3, [], []).
 
-add(Name) ->
-	gen_server:call(?CH3, {add, Name}).
+add(Name, Location) ->
+	gen_server:call(?CH3, {add, Name, Location}).
+get(Name) ->
+	gen_server:call(?CH3, {lookup, Name}).
 
 
 init(_Args) ->
-	io:format("started~n"),
-	State = dict:new(),
-	{ok, State}.
+	Tab = ets:new(?CH3, []),
+	{ok, Tab}.
 
-handle_call({add, Name}, _From, State) ->
-	Reply = dict:store(add, Name, State),
-	io:format("~p",[State]),
-		{reply, Reply, State}.
+handle_call({add, Name, Location}, _From, Tab) ->
+		Reply = ets:insert(Tab, {Name, Location}),
+		{reply, Reply, Tab};
+
+handle_call({lookup, Name}, _From, Tab) ->
+	Reply = ets:lookup(Tab, Name),
+	%io:format("~p", [Reply]),
+	{reply, Reply, Tab}.
 
 handle_cast(_Request, _State) ->
 	{noreply}.
