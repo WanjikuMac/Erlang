@@ -1,19 +1,19 @@
 -module(my_sup).
 -behavior(supervisor).
 
--export([start_link/1]).
+-export([start_link/0]).
 -export([init/1]).
 
-start_link(Number) ->
-	supervisor:start_link({local, ?MODULE}, ?MODULE, [Number]).
+start_link() ->
+	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-init(Num) ->
-	SupFlags = #{strategy => one_for_one, intensity => 10, period => 1},
+init([]) ->
+	SupFlags = #{strategy => simple_one_for_one, intensity => 5, period => 5},
 	ChildSpec = [#{id => test,
-								start => {parallel, test_trial, Num},
-								restart => temporary,
+								start => {parallel, test_trial, []},
+								restart => transient,
 								shutdown => 5000,
-								type => worker,
-								modules => [parallel]
+								type => worker
+								%modules => [parallel]
 								}],
 		{ok, {SupFlags, ChildSpec}}.

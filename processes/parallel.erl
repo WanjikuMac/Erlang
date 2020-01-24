@@ -1,5 +1,5 @@
 -module(parallel).
--export([test/1, test_inner/1, test_trial/1]).
+-export([test/1, test_inner/1, test_trial/1, add_child/0]).
 
 test_inner(0) ->
 	io:format("Reached 0~n", []),
@@ -10,7 +10,10 @@ test_inner(Number) ->
 	test_inner(Number -1).
 
 test_trial(Number) ->
-	{ok, spawn_link(parallel, test_inner, [Number])}.
+			{ok, spawn_link(parallel, test_inner, [Number])}.
+
+add_child() ->
+	supervisor:start_child(my_sup, [3]).
 
 
 test(Number) ->
