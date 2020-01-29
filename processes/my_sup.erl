@@ -8,12 +8,12 @@ start_link() ->
 	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-	SupFlags = #{strategy => simple_one_for_one, intensity => 5, period => 5},
+	SupFlags = #{strategy => simple_one_for_one, intensity => 10, period => 1},
 	ChildSpec = [#{id => test,
-								start => {parallel, test_trial, []},
+								start => {parallel, test_trail, []},
 								restart => transient,
 								shutdown => 5000,
-								type => worker
-								%modules => [parallel]
+								type => worker,
+								modules => [parallel]
 								}],
 		{ok, {SupFlags, ChildSpec}}.

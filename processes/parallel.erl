@@ -1,10 +1,11 @@
 -module(parallel).
--export([test/1, test_inner/1, test_trial/1, add_child/0]).
+-export([test/1, add_child/0, test_trial/1]).
 
 test_inner(0) ->
 	io:format("Reached 0~n", []),
 	ok;
 test_inner(Number) ->
+	%supervisor:start_child(my_sup, [Number]),
 	io:format("~p~n", [Number]),
 	timer:sleep(1000),
 	test_inner(Number -1).
