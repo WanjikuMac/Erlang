@@ -11,6 +11,7 @@
 start_link(Code) ->
 	gen_statem:start_link({local, ?NAME}, ?MODULE, Code, []).
 button(Button) ->
+	%what is the need of having this in a tuple? OR is it preference
 	gen_statem:cast(?NAME, {button, Button}).
 %handles no state specific event
 code_length() ->
@@ -31,6 +32,7 @@ terminate(_Reason, State, _Data) ->
 
 %%state routines
 locked(cast, {button, Button},#{code := Code, length := Length, buttons := Buttons} = Data) ->
+	io:format("~p~n", [Button]),
 	NewButtons =
 		if
 			length(Buttons) < Length ->
