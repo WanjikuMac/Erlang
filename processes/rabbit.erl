@@ -1,5 +1,5 @@
 -module(rabbit).
--export([rabbit/0]).
+-export([init/0]).
 
-rabbit() ->
-	io:format("Run for your life, the dogs are here").
+init() ->
+	io:format("Run for your life, the dogs are here~n").

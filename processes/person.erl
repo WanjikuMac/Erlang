@@ -1,5 +1,8 @@
 -module(person).
--export([person/1]).
+-export([init/1, spawn_fun/0]).
 
-person(Name) ->
-	io:format("My name is ~p", Name).
+init(Name) ->
+	io:format("My name is ~p", [Name]).
+
+spawn_fun() ->
+	spawn(person, init, ["Caroline"]).

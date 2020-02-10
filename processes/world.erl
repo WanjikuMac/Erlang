@@ -1,5 +1,7 @@
 -module(world).
--export([world/0]).
+-export([start/0]).
 
-world() ->
-	.
+start() ->
+	spawn(person, init, ["Caroline"]),
+	spawn(dog, init, []),
+	spawn(rabbit, init, []).

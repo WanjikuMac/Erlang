@@ -1,6 +1,6 @@
 -module(dog).
--export([dog/0]).
+-export([init/0]).
 
-dog() ->
-	io:format("Woof, woof, Rabbits on the loose").
+init() ->
+	io:format("Woof, woof, Rabbits on the loose~n").
 
