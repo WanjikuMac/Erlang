@@ -1,5 +1,5 @@
 -module(otp_erl).
--export([bad_worker/0, good_worker/0]).
+-export([bad_worker/0, good_worker/0, spawn_worker/0]).
 
 bad_worker() ->
 	receive
@@ -32,5 +32,9 @@ good_worker() ->
 			good_worker()
 	end.
 
-
+spawn_worker() ->
+	P_Bad = spawn(otp_erl, bad_worker, []),
+	P_Good = spawn(otp_erl, good_worker, []),
+	P_Bad ! {add, 2,3},
+	P_Good ! {sub, 3,2}.
 	
