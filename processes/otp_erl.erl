@@ -1,5 +1,5 @@
 -module(otp_erl).
--export([bad_worker/0]).
+-export([bad_worker/0, good_worker/0]).
 
 bad_worker() ->
 	receive
@@ -14,6 +14,23 @@ bad_worker() ->
 		anything_else -> erlang:display("I don't know how to handle this")
 	end.
 
+good_worker() ->
+	receive
+		{add, V1, V2} ->
+			erlang:display(V1+V2),
+			good_worker();
+		{sub, V1,V2} ->
+			erlang:display(V1-V2),
+			good_worker();
+		{mul, V1,V2} ->
+			erlang:display(V1*V2),
+			good_worker();
+		{square, V1} ->
+			erlang:display(V1*V1),
+			good_worker();
+		anything_else -> erlang:display("I don't know how to handle this"),
+			good_worker()
+	end.
 
 
 	
