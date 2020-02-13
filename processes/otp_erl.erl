@@ -36,5 +36,10 @@ spawn_worker() ->
 	P_Bad = spawn(otp_erl, bad_worker, []),
 	P_Good = spawn(otp_erl, good_worker, []),
 	P_Bad ! {add, 2,3},
-	P_Good ! {sub, 3,2}.
+	P_Bad ! {sub, 3,2},
+	P_Good ! {add, 3,2},
+	P_Good ! {sub, 3,2},
+	P_Good ! {mul, 3,2},
+	P_Good ! anything_else,
+	P_Good ! {square,4}.
 	
