@@ -7,6 +7,7 @@ bad_worker() ->
 			erlang:display(V1+V2);
 		{sub, V1,V2} ->
 			erlang:display(V1-V2);
+		bad_run -> _A = 2/0;
 		{mul, V1,V2} ->
 			erlang:display(V1*V2);
 		{square, V1} ->
@@ -15,12 +16,15 @@ bad_worker() ->
 	end.
 
 good_worker() ->
+	process_flag(trap_exit, true),
 	receive
 		{add, V1, V2} ->
 			erlang:display(V1+V2),
 			good_worker();
 		{sub, V1,V2} ->
 			erlang:display(V1-V2),
+			B = spawn_link(otp_erl, bad_worker, []),
+			B ! bad_run,
 			good_worker();
 		{mul, V1,V2} ->
 			erlang:display(V1*V2),
@@ -29,6 +33,10 @@ good_worker() ->
 			erlang:display(V1*V1),
 			good_worker();
 		anything_else -> erlang:display("I don't know how to handle this"),
+			good_worker();
+		{'EXIT', _Pid, Reason} ->
+			erlang:display("Caught it"),
+			io:format("Reason: ~p", [Reason]),
 			good_worker()
 	end.
 
