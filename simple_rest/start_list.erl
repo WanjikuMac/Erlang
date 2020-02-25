@@ -9,3 +9,8 @@ ProtocolOpts =  #{env => #{dispatch => Dispatch}}
 % Available options are documented in ranch_tcp(3)
 TransportOpts = [{port, 8080}]
 {ok, _} = cowboy:start_clear(example, TransportOpts , ProtocolOpts)
+
+%% starting the listener on a random port
+Name = example,
+{ok, _} = cowboy:start_clear(Name, [], Dispatch),
+port = ranch:get_port(Name).
