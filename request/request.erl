@@ -5,7 +5,7 @@ start() ->
 ssl:start().
 
 
-post(URL, ContentType, Body) ->make_request(post, {URL, [], ContentType, Body}, [], []).
+post(URL, ContentType, Body) ->make_request(post, {URL, ["isActive=1"], ContentType, Body}, [], []).
 
 make_request(Method, Request, [], []) ->
 	%The request contains
@@ -18,4 +18,4 @@ make_request(Method, Request, [], []) ->
 make_request() ->
 	httpc:request(post, {"https://api.africastalking.com/test/voice", [], "application/x-www-form-urlencoded", some_body}, [], []).
 
-%Body = {response=Response}
+%request:post("https://api.africastalking.com/test/voice", "application/x-www-form-urlencoded", ["Test"])
