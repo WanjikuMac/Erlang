@@ -19,4 +19,5 @@ fibonacci(N, T, N_2, _) when N == T ->
 fibonacci(N, _, _, _) when N < 0 ->
     false;
 fibonacci(N, T, N_2, N_1) ->
+    io:format("Value of T: ~p", [T]),
     fibonacci(N + 1,  T,  N_1,  N_2 + N_1).
