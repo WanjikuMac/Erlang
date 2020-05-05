@@ -3,7 +3,7 @@
 	{vsn, "0.1.0"},
 	{modules, ['simple_rest_app','simple_rest_sup']},
 	{registered, [simple_rest_sup]},
-	{applications, [kernel,stdlib]},
+	{applications, [kernel,stdlib,cowboy]},
 	{mod, {simple_rest_app, []}},
 	{env, []}
 ]}.
