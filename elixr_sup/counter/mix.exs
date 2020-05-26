@@ -12,6 +12,7 @@ defmodule Counter.MixProject do
   end
 
   # Run "mix help compile.app" to learn about applications.
+  # Applications we depend on and all the supervisors we are going to start up
   def application do
     [
       extra_applications: [:logger],
@@ -20,6 +21,7 @@ defmodule Counter.MixProject do
   end
 
   # Run "mix help deps" to learn about dependencies.
+  # Build time dependancies
   defp deps do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
