@@ -12,7 +12,7 @@ defmodule Counter do
       :world
 
   """
-  def hello do
-    :world
+  def count(acc) do
+    Counter.Core.inc(acc)
   end
 end
