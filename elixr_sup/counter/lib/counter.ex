@@ -1,18 +1,16 @@
 defmodule Counter do
-  @moduledoc """
-  Documentation for `Counter`.
-  """
+alias Counter.Boundary
+alias Counter.Core
 
-  @doc """
-  Hello world.
+  def start_link(initial_count) do
+    Boundary.start_link(Core.clear(initial_count))
+  end
 
-  ## Examples
+  def inc(counter) do
+    Counter.Boundary.inc(counter)
+  end
 
-      iex> Counter.hello()
-      :world
-
-  """
-  def count(acc) do
-    Counter.Core.inc(acc)
+  def state(counter) do
+    Counter.Boundary.state(counter)
   end
 end

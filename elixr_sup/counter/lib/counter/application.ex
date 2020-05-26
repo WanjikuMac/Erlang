@@ -5,7 +5,7 @@ defmodule Counter.Application do
 
   use Application
 
-  def start(_type, _args) do
+  def start(_type, _initial_state) do
     children = [
       # Starts a worker by calling: Counter.Worker.start_link(arg)
       # {Counter.Worker, arg}
